@@ -1,0 +1,9 @@
+function GetFormattedDate(date) {
+console.log(date)
+    var todayTime = new Date(date);
+    console.log(todayTime)
+    var month = todayTime .getMonth() + 1;
+    var day = todayTime .getDate();
+    var year = todayTime .getFullYear();
+    return month + "/" + day + "/" + year;
+}

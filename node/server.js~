@@ -1,0 +1,102 @@
+var express = require('express');
+var http = require('http');
+var url = require('url');
+var bodyParser = require('body-parser');
+var app = express();
+var mysql = require('mysql');
+
+app.use(bodyParser.urlencoded({extended:true}));
+app.use(bodyParser.json());
+
+app.all('*', function(req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'X-Requested-With, Authorization, Content-Type');
+  next();
+});
+
+app.listen(4004);
+
+DATABASE_HOST = 'localhost';
+DATABASE_NAME = 'doctorProfile';
+DATABASE_USERNAME = 'root';
+DATABASE_PASSWORD = ' ';
+
+var connection = mysql.createConnection({
+    host: DATABASE_HOST,
+    user: DATABASE_USERNAME,
+    password: DATABASE_PASSWORD,
+    database: DATABASE_NAME
+});
+
+app.post('/getComment', function(request, response) {
+// console.log(request.body.doctorName);
+
+       var doctorName=request.body.doctorName;
+           doctorName = doctorName.toLowerCase();
+       var strQuery = 'SELECT * FROM doctorProfile.doctorComment where doctorName="'+doctorName+'"' ;
+
+      // console.log(strQuery);
+      
+       connection.query( strQuery, function(err, rows){
+        if(err)
+        {
+           	throw err;
+            response.json("Error");
+		} else
+		{
+			console.log(rows)
+            response.json(JSON.stringify(rows));
+        }
+    });
+
+});
+
+
+app.post('/createComment', function(request, response) {
+// console.log(request.body.doctorName);
+
+       var doctorNamePostman=request.body.doctorNamePostman;
+       var userPostman=request.body.userPostman;
+       var comment=request.body.commentNamePostman;
+  
+           doctorNamePostman = doctorNamePostman.toLowerCase();
+           userPostman = userPostman.toLowerCase();           
+       var strQuery = 'insert into doctorProfile.doctorComment(doctorName,user,comment) values ("'+doctorNamePostman+'","'+userPostman+'","'+comment+'")'
+          connection.query( strQuery, function(err, rows){
+        if(err)
+        {
+           	throw err;
+            response.json("Error");
+		} else
+		{
+			
+            response.json("success");
+        }
+    });
+
+});
+
+app.post('/searchDoctor', function(request, response) {
+// console.log(request.body.doctorName);
+
+       var doctorName=request.body.doctorName;
+       
+  
+           doctorName = doctorName.toLowerCase();
+           var strQuery = 'SELECT * FROM doctorProfile.doctorComment where doctorName like '+'\'%"'+doctorName+'%\'';
+      console.log(strQuery);
+      return 1;
+       connection.query( strQuery, function(err, rows){
+        if(err)
+        {
+           	throw err;
+            response.json("Error");
+		} else
+		{
+			
+            response.json("success");
+        }
+    });
+
+
+	})
